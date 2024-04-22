@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import javax.swing.JLabel;
 
 public class Conexion {
     public static ArrayList<String>errors;
@@ -28,6 +29,26 @@ public class Conexion {
          sintactico=(ArrayList<String>)entrada.readObject();
          lexic=(ArrayList<String>)entrada.readObject();
         mensajes=(ArrayList<String>)entrada.readObject();
+
+            sock.close();
+        } catch (IOException ex) {
+            System.out.println("No se pudo conectar al servidor...");
+        }
+    }
+    
+      public static void consultas(String consult, String user) throws ClassNotFoundException{
+          try {
+          Socket sock = new Socket("localhost", 10000);
+            ObjectOutputStream salida = new ObjectOutputStream(sock.getOutputStream());
+            System.out.println("Enviando el mensaje... ");
+           
+            salida.writeObject(consult);
+            salida.writeObject(user);
+        // ObjectInputStream entrada=new ObjectInputStream(sock.getInputStream());
+         //errors=(ArrayList<String>)entrada.readObject();
+         //sintactico=(ArrayList<String>)entrada.readObject();
+         //lexic=(ArrayList<String>)entrada.readObject();
+        //mensajes=(ArrayList<String>)entrada.readObject();
 
             sock.close();
         } catch (IOException ex) {

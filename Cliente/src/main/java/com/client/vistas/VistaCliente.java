@@ -6,6 +6,8 @@ package com.client.vistas;
 
 import com.client.errores.Errores;
 import com.client.sockets.Conexion;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -58,11 +60,11 @@ public class VistaCliente extends javax.swing.JFrame {
         jScrollPane5 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
         jLabel4 = new javax.swing.JLabel();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        consultas = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         user = new javax.swing.JLabel();
         user1 = new javax.swing.JLabel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        resultConsultas = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -97,6 +99,12 @@ public class VistaCliente extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        commands.setFont(new java.awt.Font("Liberation Sans", 0, 20)); // NOI18N
+        commands.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                commandsKeyPressed(evt);
+            }
+        });
         jScrollPane2.setViewportView(commands);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -204,19 +212,6 @@ public class VistaCliente extends javax.swing.JFrame {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Comandos Para Consultas Estadisticas");
 
-        consultas.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane6.setViewportView(consultas);
-
         jLabel5.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Resultado Consultas ");
@@ -226,6 +221,11 @@ public class VistaCliente extends javax.swing.JFrame {
 
         user1.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
         user1.setText("Usuario:");
+
+        resultConsultas.setEditable(false);
+        resultConsultas.setFont(new java.awt.Font("Liberation Sans", 0, 17)); // NOI18N
+        resultConsultas.setForeground(new java.awt.Color(153, 0, 0));
+        jScrollPane7.setViewportView(resultConsultas);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -268,12 +268,13 @@ public class VistaCliente extends javax.swing.JFrame {
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane6))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(198, 198, 198))))))
+                                .addGap(198, 198, 198))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(39, 39, 39)
+                                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -295,15 +296,13 @@ public class VistaCliente extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -320,6 +319,18 @@ public class VistaCliente extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_btnSendActionPerformed
+
+    private void commandsKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_commandsKeyPressed
+       String cons = commands.getText().trim();
+       if(cons.endsWith(";")&& evt.getKeyCode()== 10){
+           try {
+               Conexion.consultas(cons, nombre);
+           } catch (ClassNotFoundException ex) {
+               ex.printStackTrace();
+           }
+          
+       }
+    }//GEN-LAST:event_commandsKeyPressed
 
     private void mensajes() {
         StringBuilder errores = new StringBuilder();
@@ -350,7 +361,6 @@ public class VistaCliente extends javax.swing.JFrame {
     private javax.swing.JTextPane actionsToServer;
     private javax.swing.JButton btnSend;
     private javax.swing.JTextPane commands;
-    private javax.swing.JTable consultas;
     private javax.swing.JTextPane errorServer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -367,8 +377,9 @@ public class VistaCliente extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JTextPane resultConsultas;
     private javax.swing.JTextPane resultServer;
     private javax.swing.JLabel user;
     private javax.swing.JLabel user1;

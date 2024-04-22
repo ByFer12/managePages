@@ -1,2 +1,6 @@
+com/client/vistas/VistaCliente$1.class
 com/client/sockets/Conexion.class
+com/client/vistas/VistaCliente.class
+com/client/vistas/VistaCliente$2.class
 com/client/Cliente.class
+com/client/errores/Errores.class
